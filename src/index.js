@@ -12,8 +12,10 @@ const port = process.env.PORT || 3000;
 
 app.use(express.static(publicDirectoryPath));
 
-io.on('connection', () => {
-  console.log('new web socket connection');
+io.on('connection', socket => {
+  socket.on('send-message', message => {
+    io.emit('message', message);
+  });
 });
 
 server.listen(port, () => {
