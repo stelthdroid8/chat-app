@@ -13,8 +13,13 @@ const port = process.env.PORT || 3000;
 app.use(express.static(publicDirectoryPath));
 
 io.on('connection', socket => {
+  socket.broadcast.emit('message', 'New user joined!');
   socket.on('send-message', message => {
     io.emit('message', message);
+  });
+
+  socket.on('disconnect', () => {
+    io.emit('message', 'User has left');
   });
 });
 
