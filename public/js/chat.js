@@ -6,7 +6,7 @@ const $messageFormButton = $messageForm.querySelector('button');
 const $shareLocationButton = document.querySelector('#share-location');
 const $messages = document.querySelector('#messages');
 
-//TEMPLATES
+//TEMPLATES -- MUSTACHE
 
 const messageTemplate = document.querySelector('#message-template').innerHTML;
 
