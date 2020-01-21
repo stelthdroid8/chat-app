@@ -1,9 +1,21 @@
 const socket = io();
-
+//DOM ELEMENTS
 const $messageForm = document.getElementById('message-form');
 const $messageFormInput = $messageForm.querySelector('#message-input');
 const $messageFormButton = $messageForm.querySelector('button');
 const $shareLocationButton = document.querySelector('#share-location');
+const $messages = document.querySelector('#messages');
+
+//TEMPLATES
+
+const messageTemplate = document.querySelector('#message-template').innerHTML;
+
+//EVENT LISTENERS
+socket.on('message', message => {
+  // console.log(message);
+  const html = Mustache.render(messageTemplate, { message });
+  $messages.insertAdjacentHTML('beforeend', html);
+});
 
 $messageForm.addEventListener('submit', e => {
   e.preventDefault();
@@ -19,10 +31,6 @@ $messageForm.addEventListener('submit', e => {
     }
     console.log('message was delivered');
   });
-});
-
-socket.on('message', message => {
-  console.log(message);
 });
 
 // const locationButton = document.querySelector('#share-location');
