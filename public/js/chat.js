@@ -16,7 +16,10 @@ const locationMessageTemplate = document.querySelector(
 //EVENT LISTENERS
 socket.on('message', message => {
   // console.log(message);
-  const html = Mustache.render(messageTemplate, { message });
+  const html = Mustache.render(messageTemplate, {
+    message: message.text,
+    createdAt: message.createdAt
+  });
   $messages.insertAdjacentHTML('beforeend', html);
 });
 
