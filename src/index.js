@@ -41,7 +41,10 @@ io.on('connection', socket => {
         'message',
         generateMessage('Admin', `${user.username} has joined!`)
       );
-
+    io.to(user.room).emit('roomData', {
+      room: user.room,
+      users: getUsersInRoom(user.room)
+    });
     callback();
     //socket.emit - specific client io.emit - every client socket.broadcast.emit - everyone besides this connection
     //io.to.emit, socket.broadcast.to.emit -- these limit to specific chatrooms
@@ -67,6 +70,11 @@ io.on('connection', socket => {
         'message',
         generateMessage('Admin', `${user.username} has left`)
       );
+
+      io.to(user.room).emit('roomData', {
+        room: user.room,
+        users: getUsersInRoom(user.room)
+      });
     }
   });
 
