@@ -19,6 +19,28 @@ const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true
 });
 
+const autoscroll = () => {
+  //get new message element
+  const $newMessage = $messages.lastElementChild;
+
+  //find height of new message
+  const newMessagesStyles = getComputedStyle($newMessage);
+  const newMessageMargin = parseInt(newMessagesStyles.marginBottom);
+  const newMessageHeight = $newMessage.offsetHeight + newMessageMargin;
+  // visible height
+  const visibleHeight = $messages.offsetHeight;
+  //height of messages container
+
+  const containerHeight = $messages.scrollHeight;
+
+  //where we are currently scrolled
+  const scrollOffset = $messages.scrollTop + visibleHeight;
+
+  if (containerHeight - newMessageHeight <= scrollOffset) {
+    $messages.scrollTop = $messages.scrollHeight;
+  }
+};
+
 //EVENT LISTENERS
 socket.on('message', message => {
   // console.log(message);
@@ -28,6 +50,7 @@ socket.on('message', message => {
     createdAt: moment(message.createdAt).format('h:mm A')
   });
   $messages.insertAdjacentHTML('beforeend', html);
+  autoscroll();
 });
 
 //watch and displaylocation message when it is sent
@@ -39,6 +62,7 @@ socket.on('locationMessage', message => {
     createdAt: moment(message.createdAt).format('h:mm A')
   });
   $messages.insertAdjacentHTML('beforeend', html);
+  autoscroll();
 });
 
 socket.on('roomData', ({ room, users }) => {
