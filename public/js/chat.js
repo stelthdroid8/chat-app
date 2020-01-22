@@ -13,20 +13,35 @@ const locationMessageTemplate = document.querySelector(
   '#location-message-template'
 ).innerHTML;
 
+//OPTIONS
+const { username, room } = Qs.parse(location.search, {
+  ignoreQueryPrefix: true
+});
+
 //EVENT LISTENERS
 socket.on('message', message => {
   // console.log(message);
   const html = Mustache.render(messageTemplate, {
+    username: message.username,
     message: message.text,
-    createdAt: message.createdAt
+    createdAt: moment(message.createdAt).format('h:mm A')
   });
   $messages.insertAdjacentHTML('beforeend', html);
 });
 
-socket.on('locationMessage', url => {
-  const html = Mustache.render(locationMessageTemplate, { url });
+//watch and displaylocation message when it is sent
+
+socket.on('locationMessage', message => {
+  const html = Mustache.render(locationMessageTemplate, {
+    username: message.username,
+    url: message.url,
+    createdAt: moment(message.createdAt).format('h:mm A')
+  });
   $messages.insertAdjacentHTML('beforeend', html);
 });
+
+//watch for submit message button being used
+
 $messageForm.addEventListener('submit', e => {
   e.preventDefault();
   $messageFormButton.setAttribute('disabled', 'disabled');
@@ -39,11 +54,10 @@ $messageForm.addEventListener('submit', e => {
     if (error) {
       return console.log(error);
     }
-    console.log('message was delivered');
   });
 });
 
-// const locationButton = document.querySelector('#share-location');
+//watch for location button being clicked to emit proper event
 
 $shareLocationButton.addEventListener('click', () => {
   if (!navigator.geolocation) {
@@ -59,9 +73,14 @@ $shareLocationButton.addEventListener('click', () => {
       },
       () => {
         $shareLocationButton.removeAttribute('disabled');
-        console.log('location shared!');
       }
     );
-    // console.log(position);
   });
+});
+
+socket.emit('join', { username, room }, error => {
+  if (error) {
+    alert(error);
+    location.href = '/';
+  }
 });
